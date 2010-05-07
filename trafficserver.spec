@@ -7,6 +7,15 @@ Group:		Networking/Daemons/HTTP
 Source0:	http://www.apache.org/dist/trafficserver/%{name}-%{version}.tar.bz2
 # Source0-md5:	4c000131b19bdda05f1f21c6ae0547af
 URL:		http://trafficserver.apache.org/
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	expat-devel
+BuildRequires:	libstdc++-devel
+BuildRequires:	libtool
+BuildRequires:	openssl-devel
+BuildRequires:	pcre-devel
+BuildRequires:	sqlite3-devel
+BuildRequires:	tcl-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -32,4 +41,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc AUTHORS CREDITS ChangeLog NEWS README THANKS TODO
+%doc CHANGES INSTALL NOTICE README STATUS
