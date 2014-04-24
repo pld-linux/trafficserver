@@ -47,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%{__mv} $RPM_BUILD_ROOT/usr/man/man3/Apache* $RPM_BUILD_ROOT%{_mandir}/man3/
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -65,7 +67,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/lib*.so.*
 %{_docdir}/trafficserver/trafficshell/*.1
 %{_mandir}/man1/*
-%{_mandir}/man3/*
+%{_mandir}/man3/TS*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 
@@ -84,7 +86,5 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/perl5/Apache/TS/Config/Records.pm
 %{_prefix}/lib/perl5/5.18.0/x86_64-pld-linux-thread-multi/auto/Apache/TS/.packlist
 %{_libdir}/perl5/5.18.2/x86_64-pld-linux-thread-multi/perllocal.pod
-%{_mandir}/man3/Apache::TS.3pm
-%{_mandir}/man3/Apache::TS::AdminClient.3pm
-%{_mandir}/man3/Apache::TS::Config::Records.3pm
+%{_mandir}/man3/Apache*
 
