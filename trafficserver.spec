@@ -3,7 +3,11 @@
 # - add init/systemctl scripts
 # - fix file attrs
 # - fix perl paths
-#
+# - move perl files to perl vendordir
+# - non lib-prefixed *.so should go to private lib dir?, do we need .la?
+# - %config attrs to sysconfig files
+
+%include	/usr/lib/rpm/macros.perl
 Summary:	Fast, scalable and extensible HTTP/1.1 compliant caching proxy server
 Name:		trafficserver
 Version:	4.2.0
@@ -20,14 +24,13 @@ BuildRequires:	libstdc++-devel
 BuildRequires:	libtool
 BuildRequires:	openssl-devel
 BuildRequires:	pcre-devel
+BuildRequires:	rpm-perlprov >= 4.1-13
 BuildRequires:	sqlite3-devel
 BuildRequires:	tcl-devel
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		filterout_ld	-Wl,--as-needed
 %define		skip_post_check_so	.*lib.*/libtsmgmtshare.so.*
-
-%include	/usr/lib/rpm/macros.perl
 
 %description
 Traffic Server is fast, scalable and extensible HTTP/1.1 compliant
@@ -47,10 +50,16 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-%{__mv} $RPM_BUILD_ROOT/usr/man/man3/Apache* $RPM_BUILD_ROOT%{_mandir}/man3/
+%{__mv} $RPM_BUILD_ROOT/usr/man/man3/Apache* $RPM_BUILD_ROOT%{_mandir}/man3
+%{__rm} $RPM_BUILD_ROOT%{_prefix}/lib/perl5/*/*-pld-linux-thread-multi/auto/Apache/TS/.packlist
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/perl5/*/*-pld-linux-thread-multi/perllocal.pod
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/perl5/Apache/TS.pm.in
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+
+%post	-p /sbin/ldconfig
+%postun	-p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
@@ -63,28 +72,41 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/%{name}/*.config
 %{_sysconfdir}/%{name}/stats.config.xml
 %{_sysconfdir}/%{name}/trafficserver-release
-%attr(755,root,root) %{_bindir}/*
-%{_libdir}/lib*.so.*
+%attr(755,root,root) %{_bindir}/traffic_cop
+%attr(755,root,root) %{_bindir}/traffic_line
+%attr(755,root,root) %{_bindir}/traffic_logcat
+%attr(755,root,root) %{_bindir}/traffic_logstats
+%attr(755,root,root) %{_bindir}/traffic_manager
+%attr(755,root,root) %{_bindir}/traffic_sac
+%attr(755,root,root) %{_bindir}/traffic_server
+%attr(755,root,root) %{_bindir}/traffic_shell
+%attr(755,root,root) %{_bindir}/traffic_top
+%attr(755,root,root) %{_bindir}/trafficserver
+%attr(755,root,root) %{_bindir}/tspush
+%attr(755,root,root) %{_bindir}/tstop
+%attr(755,root,root) %{_bindir}/tsxs
 %{_docdir}/trafficserver/trafficshell/*.1
-%{_mandir}/man1/*
+%{_mandir}/man1/*.1*
 %{_mandir}/man3/TS*
-%{_mandir}/man5/*
-%{_mandir}/man8/*
+%{_mandir}/man5/*.5*
+%{_mandir}/man8/*.8*
+
+# libs
+%attr(755,root,root) %{_libdir}/libtsmgmt.so.*.*.*
+%ghost %{_libdir}/libtsmgmt.so.4
+%attr(755,root,root) %{_libdir}/libtsmgmtshare.so.*.*.*
+%ghost %{_libdir}/libtsmgmtshare.so.4
+%attr(755,root,root) %{_libdir}/libtsutil.so.*.*.*
+%ghost %{_libdir}/libtsutil.so.4
 
 #%files devel
 #%defattr(644,root,root,755)
-%{_includedir}/ts/*.h
+%{_includedir}/ts
 %{_libdir}/*.la
 %{_libdir}/*.so
 
 #%files -n perl-Apache-TS
 #%defattr(644,root,root,755)
 %{_datadir}/perl5/Apache/TS.pm
-%{_datadir}/perl5/Apache/TS.pm.in
-%{_datadir}/perl5/Apache/TS/AdminClient.pm
-%{_datadir}/perl5/Apache/TS/Config.pm
-%{_datadir}/perl5/Apache/TS/Config/Records.pm
-%{_prefix}/lib/perl5/5.18.0/x86_64-pld-linux-thread-multi/auto/Apache/TS/.packlist
-%{_libdir}/perl5/5.18.2/x86_64-pld-linux-thread-multi/perllocal.pod
-%{_mandir}/man3/Apache*
-
+%{_datadir}/perl5/Apache/TS
+%{_mandir}/man3/Apache::TS*.3pm*
