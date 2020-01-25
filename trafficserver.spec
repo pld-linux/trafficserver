@@ -7,7 +7,6 @@
 # - non lib-prefixed *.so should go to private lib dir?, do we need .la?
 # - %config attrs to sysconfig files
 
-%include	/usr/lib/rpm/macros.perl
 Summary:	Fast, scalable and extensible HTTP/1.1 compliant caching proxy server
 Name:		trafficserver
 Version:	4.2.0
